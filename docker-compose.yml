@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  django:
+    build: .
+    container_name: django_cont
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000 || exit 1"]
+
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 60s
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_cont
+    environment:
+      POSTGRES_USER: hello
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hello
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hello -d hello"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - nw
+
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_cont
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+    restart: always
+    networks:
+      - nw
+
+volumes:
+  postgres-data:
+
+networks:
+  nw:
+

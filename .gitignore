@@ -216,3 +216,20 @@ flycheck_*.el
 
 # network security
 /network-security.data
+ # Environment variables
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
